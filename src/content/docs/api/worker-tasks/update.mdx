@@ -38,13 +38,36 @@ Send the request body with `Content-Type: application/json`. Required/Optional d
 | Field | Required | Type | Description |
 | --- | --- | --- | --- |
 | `description` | No | `string` | Task template description. Optional. |
-| `schedule_day` | No | `integer` | Day of month for monthly schedules (1-31). |
+| `recipient_email` | No | `string` | Email address notified when the task finishes. |
+| `schedule_day` | No | `integer` | Day of month for monthly schedules (1-31). Single-day compatibility field; prefer `schedule_days`. |
+| `schedule_day_interval` | No | `integer` | Repeat every N days for daily schedules. Default 1. |
+| `schedule_days` | No | `string` | Days of month for monthly schedules, comma-separated (e.g. `1,15,31`). |
 | `schedule_enabled` | No | `enum: 0, 1` | Schedule switch: 1 enabled, 0 disabled. |
+| `schedule_hour_interval` | No | `integer` | Repeat every N hours for `schedule_type=5`. Required when type 5. Range 1-23. |
+| `schedule_minute_interval` | No | `integer` | Repeat every N minutes for `schedule_type=6`. Required when type 6. Range 1-59. |
 | `schedule_once_date` | No | `string` | Date for one-time schedules, `YYYY-MM-DD`. |
 | `schedule_time` | No | `string` | Schedule time of day, `HH:mm`. |
-| `schedule_type` | No | `enum: 1, 2, 3, 4` | Schedule type: 1=daily, 2=weekly, 3=monthly, 4=once. |
-| `schedule_weekday` | No | `enum: 1, 2, 3, 4, 5, 6, 7` | Day of week for weekly schedules (1=Monday … 7=Sunday). |
+| `schedule_timezone` | No | `string` | IANA timezone for the schedule, default `Asia/Shanghai` (e.g. `UTC`, `America/New_York`). |
+| `schedule_type` | No | `enum: 1, 2, 3, 4, 5, 6` | Schedule type: 1=daily, 2=weekly, 3=monthly, 4=once, 5=every N hours, 6=every N minutes. |
+| `schedule_weekday` | No | `enum: 1, 2, 3, 4, 5, 6, 7` | Day of week for weekly schedules (1=Monday … 7=Sunday). Single-day compatibility field; prefer `schedule_weekdays`. |
+| `schedule_weekdays` | No | `string` | Days of week for weekly schedules, comma-separated (e.g. `1,3,5`). |
+| `task_template_id` | No | `integer` | Associated task template ID. |
 | `title` | No | `string` | Task template title, used for display and search. |
+
+### Scheduling
+
+Set `schedule_enabled: 1` together with `schedule_type` and the fields required for that type:
+
+| `schedule_type` | Meaning | Companion fields |
+| --- | --- | --- |
+| `1` | Every day | `schedule_time`; optional `schedule_day_interval` (every N days, default 1). |
+| `2` | Every week | `schedule_time`; `schedule_weekdays` (e.g. `1,3,5`) or `schedule_weekday`. |
+| `3` | Every month | `schedule_time`; `schedule_days` (e.g. `1,15,31`) or `schedule_day`. |
+| `4` | Once | `schedule_once_date` (`YYYY-MM-DD`) and `schedule_time`. |
+| `5` | Every N hours | `schedule_hour_interval` (1-23). |
+| `6` | Every N minutes | `schedule_minute_interval` (1-59). |
+
+Schedules are interpreted in `schedule_timezone` (default `Asia/Shanghai`). The API generates a Console-compatible cron with a seconds field and `CRON_TZ` prefix, for example `CRON_TZ=Asia/Shanghai 0 30 9 * * *`. The Console scheduler only registers schedules in this format.
 
 ### JSON Example
 
@@ -85,6 +108,7 @@ curl -X PUT "https://openapi.coreclaw.com/api/v2/worker-tasks/YOUR_WORKER_TASK_I
 - API v2 supports Bearer token, the legacy `api-key` header, and query token. Prefer Bearer token for new integrations.
 - PUT is a partial update: omitted fields keep their current values; you do not need to resend the whole task object.
 - To update the task input parameters themselves (not the title or schedule), use `PUT /api/v2/worker-tasks/{workerTaskId}/input`.
+- The API service does not execute scheduled tasks itself; the Console scheduler must be running for schedules to fire. Re-saving the schedule configuration regenerates the Console-compatible cron (with seconds field and `CRON_TZ` prefix) that the scheduler registers.
 
 ## HTTP Responses
 

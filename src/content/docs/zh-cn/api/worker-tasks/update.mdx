@@ -38,13 +38,36 @@ import ApiPlayground from '../../../../../components/ApiPlayground.astro'
 | 字段 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- |
 | `description` | 否 | `string` | 任务模板描述，可选。 |
-| `schedule_day` | 否 | `integer` | 每月调度时的日期（1-31）。 |
+| `recipient_email` | 否 | `string` | 任务结束时接收通知的邮箱。 |
+| `schedule_day` | 否 | `integer` | 每月调度时的日期（1-31）。单日兼容字段；建议使用 `schedule_days`。 |
+| `schedule_day_interval` | 否 | `integer` | 每天调度时每 N 天执行一次，默认 1。 |
+| `schedule_days` | 否 | `string` | 每月调度时的日期列表，逗号分隔，如 `1,15,31`。 |
 | `schedule_enabled` | 否 | `enum: 0, 1` | 调度开关：1 启用，0 关闭。 |
+| `schedule_hour_interval` | 否 | `integer` | `schedule_type=5` 时每 N 小时执行一次，必填。范围 1-23。 |
+| `schedule_minute_interval` | 否 | `integer` | `schedule_type=6` 时每 N 分钟执行一次，必填。范围 1-59。 |
 | `schedule_once_date` | 否 | `string` | 单次调度的日期，格式 `YYYY-MM-DD`。 |
 | `schedule_time` | 否 | `string` | 调度执行时间，格式 `HH:mm`。 |
-| `schedule_type` | 否 | `enum: 1, 2, 3, 4` | 调度类型：1=每天，2=每周，3=每月，4=单次。 |
-| `schedule_weekday` | 否 | `enum: 1, 2, 3, 4, 5, 6, 7` | 每周调度时的星期几（1=周一 … 7=周日）。 |
+| `schedule_timezone` | 否 | `string` | 调度所在 IANA 时区，默认 `Asia/Shanghai`（如 `UTC`、`America/New_York`）。 |
+| `schedule_type` | 否 | `enum: 1, 2, 3, 4, 5, 6` | 调度类型：1=每天，2=每周，3=每月，4=单次，5=每 N 小时，6=每 N 分钟。 |
+| `schedule_weekday` | 否 | `enum: 1, 2, 3, 4, 5, 6, 7` | 每周调度时的星期几（1=周一 … 7=周日）。单日兼容字段；建议使用 `schedule_weekdays`。 |
+| `schedule_weekdays` | 否 | `string` | 每周调度时的星期几列表，逗号分隔，如 `1,3,5`。 |
+| `task_template_id` | 否 | `integer` | 关联的任务模板 ID。 |
 | `title` | 否 | `string` | 任务模板标题，用于展示和搜索。 |
+
+### 调度说明
+
+启用调度时需将 `schedule_enabled` 设为 `1`，并同时提供 `schedule_type` 及该类型要求的字段：
+
+| `schedule_type` | 含义 | 配套字段 |
+| --- | --- | --- |
+| `1` | 每天 | `schedule_time`；可选 `schedule_day_interval`（每 N 天，默认 1）。 |
+| `2` | 每周 | `schedule_time`；`schedule_weekdays`（如 `1,3,5`）或 `schedule_weekday`。 |
+| `3` | 每月 | `schedule_time`；`schedule_days`（如 `1,15,31`）或 `schedule_day`。 |
+| `4` | 单次 | `schedule_once_date`（`YYYY-MM-DD`）和 `schedule_time`。 |
+| `5` | 每 N 小时 | `schedule_hour_interval`（1-23）。 |
+| `6` | 每 N 分钟 | `schedule_minute_interval`（1-59）。 |
+
+调度按 `schedule_timezone`（默认 `Asia/Shanghai`）解释。API 生成的 cron 为 console 兼容格式：带秒字段且带 `CRON_TZ` 前缀，例如 `CRON_TZ=Asia/Shanghai 0 30 9 * * *`。console 调度器只注册这种格式的调度。
 
 ### JSON 示例
 
@@ -85,6 +108,7 @@ curl -X PUT "https://openapi.coreclaw.com/api/v2/worker-tasks/YOUR_WORKER_TASK_I
 - API v2 同时支持 Bearer token、旧版 `api-key` 请求头和 query token；新集成建议优先使用 Bearer token。
 - PUT 为部分更新语义：省略的字段保持原值，无需重传整个任务对象。
 - 如需更新任务输入参数本身（而非标题或调度），请使用 `PUT /api/v2/worker-tasks/{workerTaskId}/input`。
+- API 服务本身不执行定时任务；调度到点触发依赖 console 调度器正常启动。重新保存调度配置会重新生成 console 兼容格式的 cron（带秒字段且带 `CRON_TZ` 前缀），供调度器注册。
 
 ## HTTP 响应
 

@@ -141,7 +141,7 @@ CoreClaw 节点按**资源**组织。先选择资源，再选择操作。标记�
 | 操作 | 对应 API | 说明 |
 | --- | --- | --- |
 | **List** | `GET /api/v2/worker-tasks` | 按 `worker_id`、`keyword` 过滤；Return All |
-| **Create** | `POST /api/v2/worker-tasks` | 需 `worker_id`、`title`、`input_json`；可选定时（`schedule_type` 1=每天/2=每周/3=每月/4=单次，配 `schedule_time`/`schedule_weekday` 1–7/`schedule_day`/`schedule_once_date`/`schedule_enabled`） |
+| **Create** | `POST /api/v2/worker-tasks` | 需 `worker_id`、`title`、`input_json`；可选定时（`schedule_type` 1=每天/2=每周/3=每月/4=单次/5=每 N 小时/6=每 N 分钟，配 `schedule_time`/`schedule_weekdays`/`schedule_days`/`schedule_hour_interval`/`schedule_minute_interval`/`schedule_timezone`/`schedule_enabled`） |
 | **Get** | `GET /api/v2/worker-tasks/{workerTaskId}` | 从列表选或粘贴 ID |
 | **Update** | `PUT /api/v2/worker-tasks/{workerTaskId}` | `title`、`description`、定时字段。改输入用 **Update Input** |
 | **Delete** | `DELETE /api/v2/worker-tasks/{workerTaskId}` | |

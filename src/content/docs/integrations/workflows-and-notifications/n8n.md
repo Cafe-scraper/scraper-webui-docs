@@ -141,7 +141,7 @@ Common run fields (on `Run`, `Rerun`, and task `Run` operations): **Version** (o
 | Operation | Maps to | Notes |
 | --- | --- | --- |
 | **List** | `GET /api/v2/worker-tasks` | Filter by `worker_id`, `keyword`; Return All |
-| **Create** | `POST /api/v2/worker-tasks` | Requires `worker_id`, `title`, `input_json`; optional schedule (`schedule_type` 1=daily/2=weekly/3=monthly/4=once, with `schedule_time`/`schedule_weekday` 1–7/`schedule_day`/`schedule_once_date`/`schedule_enabled`) |
+| **Create** | `POST /api/v2/worker-tasks` | Requires `worker_id`, `title`, `input_json`; optional schedule (`schedule_type` 1=daily/2=weekly/3=monthly/4=once/5=every N hours/6=every N minutes, with `schedule_time`/`schedule_weekdays`/`schedule_days`/`schedule_hour_interval`/`schedule_minute_interval`/`schedule_timezone`/`schedule_enabled`) |
 | **Get** | `GET /api/v2/worker-tasks/{workerTaskId}` | Pick from List / paste an ID |
 | **Update** | `PUT /api/v2/worker-tasks/{workerTaskId}` | `title`, `description`, schedule fields. To change the input, use **Update Input** |
 | **Delete** | `DELETE /api/v2/worker-tasks/{workerTaskId}` | |

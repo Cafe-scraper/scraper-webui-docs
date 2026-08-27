@@ -11,12 +11,30 @@
           "input": {
             "description": "Task input parameters"
           },
+          "recipient_email": {
+            "description": "Email address notified when the task finishes.",
+            "type": "string"
+          },
+          "schedule_date": {
+            "description": "Start date/time for the schedule. YYYY-MM-DD or YYYY-MM-DD HH:mm.",
+            "type": "string"
+          },
           "schedule_day": {
-            "description": "Day of month for monthly schedule (1-31).",
+            "description": "Day of month for monthly schedule (1-31). Single-day compatibility field; prefer schedule_days.",
             "format": "int64",
             "type": "integer",
             "minimum": 1,
             "maximum": 31
+          },
+          "schedule_day_interval": {
+            "description": "Repeat every N days for daily schedules. Default 1.",
+            "format": "int64",
+            "type": "integer",
+            "minimum": 1
+          },
+          "schedule_days": {
+            "description": "Days of month for monthly schedules, comma-separated (e.g. 1,15,31).",
+            "type": "string"
           },
           "schedule_enabled": {
             "description": "Schedule switch. 0=disabled, 1=enabled.",
@@ -27,6 +45,20 @@
               1
             ]
           },
+          "schedule_hour_interval": {
+            "description": "Repeat every N hours for schedule_type=5. Required when type 5. Range 1-23.",
+            "format": "int64",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 23
+          },
+          "schedule_minute_interval": {
+            "description": "Repeat every N minutes for schedule_type=6. Required when type 6. Range 1-59.",
+            "format": "int64",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 59
+          },
           "schedule_once_date": {
             "description": "Once schedule date in YYYY-MM-DD",
             "type": "string"
@@ -35,19 +67,25 @@
             "description": "Schedule time in HH:mm",
             "type": "string"
           },
+          "schedule_timezone": {
+            "description": "IANA timezone for the schedule. Default Asia/Shanghai (e.g. UTC, America/New_York).",
+            "type": "string"
+          },
           "schedule_type": {
-            "description": "Schedule type. 1=daily, 2=weekly, 3=monthly, 4=once.",
+            "description": "Schedule type. 1=daily, 2=weekly, 3=monthly, 4=once, 5=every N hours, 6=every N minutes.",
             "format": "int64",
             "type": "integer",
             "enum": [
               1,
               2,
               3,
-              4
+              4,
+              5,
+              6
             ]
           },
           "schedule_weekday": {
-            "description": "Weekday for weekly schedule. 1=Monday ... 7=Sunday.",
+            "description": "Weekday for weekly schedule. 1=Monday ... 7=Sunday. Single-day compatibility field; prefer schedule_weekdays.",
             "format": "int64",
             "type": "integer",
             "enum": [
@@ -61,6 +99,15 @@
             ],
             "minimum": 1,
             "maximum": 7
+          },
+          "schedule_weekdays": {
+            "description": "Days of week for weekly schedules, comma-separated (e.g. 1,3,5).",
+            "type": "string"
+          },
+          "task_template_id": {
+            "description": "Associated task template ID.",
+            "format": "int64",
+            "type": "integer"
           },
           "title": {
             "description": "Task title",
@@ -276,12 +323,30 @@
             "description": "Task description. Omit to keep current description.",
             "type": "string"
           },
+          "recipient_email": {
+            "description": "Email address notified when the task finishes.",
+            "type": "string"
+          },
+          "schedule_date": {
+            "description": "Start date/time for the schedule. YYYY-MM-DD or YYYY-MM-DD HH:mm.",
+            "type": "string"
+          },
           "schedule_day": {
-            "description": "Day of month for monthly schedule (1-31).",
+            "description": "Day of month for monthly schedule (1-31). Omit to keep current. Single-day compatibility field; prefer schedule_days.",
             "format": "int64",
             "type": "integer",
             "minimum": 1,
             "maximum": 31
+          },
+          "schedule_day_interval": {
+            "description": "Repeat every N days for daily schedules. Default 1.",
+            "format": "int64",
+            "type": "integer",
+            "minimum": 1
+          },
+          "schedule_days": {
+            "description": "Days of month for monthly schedules, comma-separated (e.g. 1,15,31).",
+            "type": "string"
           },
           "schedule_enabled": {
             "description": "Schedule switch. 0=disabled, 1=enabled.",
@@ -292,6 +357,20 @@
               1
             ]
           },
+          "schedule_hour_interval": {
+            "description": "Repeat every N hours for schedule_type=5. Required when type 5. Range 1-23.",
+            "format": "int64",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 23
+          },
+          "schedule_minute_interval": {
+            "description": "Repeat every N minutes for schedule_type=6. Required when type 6. Range 1-59.",
+            "format": "int64",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 59
+          },
           "schedule_once_date": {
             "description": "Once schedule date in YYYY-MM-DD",
             "type": "string"
@@ -300,19 +379,25 @@
             "description": "Schedule time in HH:mm",
             "type": "string"
           },
+          "schedule_timezone": {
+            "description": "IANA timezone for the schedule. Default Asia/Shanghai (e.g. UTC, America/New_York).",
+            "type": "string"
+          },
           "schedule_type": {
-            "description": "Schedule type. 1=daily, 2=weekly, 3=monthly, 4=once.",
+            "description": "Schedule type. 1=daily, 2=weekly, 3=monthly, 4=once, 5=every N hours, 6=every N minutes.",
             "format": "int64",
             "type": "integer",
             "enum": [
               1,
               2,
               3,
-              4
+              4,
+              5,
+              6
             ]
           },
           "schedule_weekday": {
-            "description": "Weekday for weekly schedule. 1=Monday ... 7=Sunday.",
+            "description": "Weekday for weekly schedule. 1=Monday ... 7=Sunday. Omit to keep current. Single-day compatibility field; prefer schedule_weekdays.",
             "format": "int64",
             "type": "integer",
             "enum": [
@@ -326,6 +411,15 @@
             ],
             "minimum": 1,
             "maximum": 7
+          },
+          "schedule_weekdays": {
+            "description": "Days of week for weekly schedules, comma-separated (e.g. 1,3,5).",
+            "type": "string"
+          },
+          "task_template_id": {
+            "description": "Associated task template ID.",
+            "format": "int64",
+            "type": "integer"
           },
           "title": {
             "description": "Task title. Omit to keep current title.",
