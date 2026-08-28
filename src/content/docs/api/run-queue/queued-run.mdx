@@ -94,7 +94,7 @@ curl -X POST "https://openapi.coreclaw.com/api/v2/workers/YOUR_WORKER_ID/queued-
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `queue_ref` | `string` | The queue item ID. Use it to [activate](/api/run-queue/activate-items/) or [release](/api/run-queue/release-items/) the run later. |
+| `queue_ref` | `string` | The queue item ID. Use it to [activate](/api/run-queue/activate-items/) or [release](/api/run-queue/release-items/) the run later. When calling the activate endpoint, pass an array of these values as `queue_refs` (e.g. `{"queue_refs": ["123456"]})`. |
 | `queue_status` | `string` | Status of the item in the queue, for example `waiting`. A `waiting` item is held in the queue and will not start until you activate it. |
 | `queued` | `boolean` | Whether the run was accepted into the queue. |
 
